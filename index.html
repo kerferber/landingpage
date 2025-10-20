@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- AOS (Animate On Scroll) -->
+<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
   <style>
     :root{
       --brand: #3b82f6;
@@ -20,7 +23,8 @@
       --screen-width: 81.25%;
       --notebook-max: 720px;
     }
-    html,body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color: #0b1220;}
+    html,body{ font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color: #0b1220; overflow-x:hidden;}
+    body{ padding-bottom: 6rem; }
     .section{ padding: 5rem 0; }
 
     /* Header */
@@ -51,8 +55,69 @@
     .card-wow:hover .icon-chip{ transform: translateY(-3px) scale(1.06) rotate(-2deg); filter: saturate(1.2); }
 
 
+
+
+/* micro-efeitos e acabamento para os cards */
+.card-wow{ position:relative; }
+.card-wow .spark{
+  position:absolute; inset:-1px; pointer-events:none; opacity:0;
+  background: radial-gradient(600px 180px at 10% -10%, rgba(59,130,246,.10), transparent 40%),
+              radial-gradient(600px 180px at 90% 120%, rgba(124,58,237,.10), transparent 40%);
+  transition: opacity .35s ease;
+}
+.card-wow:hover .spark{ opacity:1; }
+
+.icon-chip{
+  height:48px; width:48px; border-radius:14px; display:grid; place-items:center;
+  color:#fff; box-shadow:0 6px 20px rgba(59,130,246,.25);
+  background: linear-gradient(135deg, #3b82f6, #7c3aed);
+  transform: translateZ(0); transition: transform .25s ease;
+}
+.card-wow:hover .icon-chip{ transform: translateY(-2px); }
+
+
+
+
+/* Container e itens animados */
+.insight-item {
+  opacity: 0;
+  transform: translateY(8px) scale(.98);
+  transition: opacity .45s cubic-bezier(.22,.61,.36,1), 
+              transform .45s cubic-bezier(.22,.61,.36,1);
+  will-change: transform, opacity;
+}
+.insight-item.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition-delay: calc(var(--d, 0) * 70ms); /* stagger */
+}
+
+/* efeito “swap” quando sai */
+.insight-list-exit .insight-item {
+  opacity: 0;
+  transform: translateY(-6px) scale(.985);
+}
+
+/* micro-interação no hover */
+.insight-item:hover {
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* badge animadinho (opcional) */
+.badge-pulse {
+  box-shadow: 0 0 0 0 rgba(59,130,246,.35);
+  animation: pulseBadge 1.8s ease-out infinite;
+}
+@keyframes pulseBadge {
+  0%   { box-shadow: 0 0 0 0 rgba(59,130,246,.28); }
+  100% { box-shadow: 0 0 0 14px rgba(59,130,246,0); }
+}
+
+
+
+
     /* Pricing glow */
-    .price-card{ position:relative; overflow:hidden; border-radius:1.35rem; background:#fff; border:1px solid #e6eaf3; transition:.25s ease; transform-style:preserve-3d; }
+    .price-card{ position:relative; overflow:visible; border-radius:1.35rem; background:#fff; border:1px solid #e6eaf3; transition:.25s ease; transform-style:preserve-3d; }
     .price-card::after{ content:""; position:absolute; inset:-2px; border-radius:1.6rem; background: radial-gradient(600px 200px at 20% -10%, rgba(59,130,246,.18), transparent 40%), radial-gradient(600px 200px at 80% -10%, rgba(124,58,237,.18), transparent 40%); opacity:0; filter:blur(10px); transition:opacity .35s ease; }
     .price-card:hover{ transform: translateY(-3px) rotateX(1.5deg); box-shadow:0 20px 40px rgba(2,6,23,.12); border-color:transparent; }
     .price-card:hover::after{ opacity:1; }
@@ -67,7 +132,7 @@
     .slide{ flex:0 0 100%; }
     .slide img{ display:block; width:100%; height:100%; object-fit: contain; }
     .tilt{ transform-style: preserve-3d; transition: transform .25s ease, box-shadow .25s ease; }
-    .tilt:hover{ box-shadow: 0 22px 60px rgba(2,6,23,.25); }
+    
     .nav-btn{ height:44px; width:44px; display:grid; place-items:center; border-radius:999px; background:#fff; border:1px solid #e6eaf3; box-shadow:0 10px 20px rgba(15,23,42,.12); transition: transform .2s ease; }
     .nav-btn:hover{ transform: translateY(-1px); }
     .dots .dot{ height:8px; width:8px; border-radius:999px; background:#cbd5e1; transition:.25s; }
@@ -86,6 +151,13 @@
 
     .reveal{ opacity:0; transform: translateY(8px); transition: .45s ease; }
     .reveal.is-visible{ opacity:1; transform: translateY(0); }
+
+    .sticky-cta{ transform: translateY(140%); opacity:0; pointer-events:none; transition: transform .45s ease, opacity .45s ease; }
+    .sticky-cta.is-visible{ transform: translateY(0); opacity:1; pointer-events:auto; }
+
+    #funcionalidades .card-wow:nth-child(3n+1){ background: linear-gradient(135deg, rgba(59,130,246,.08), rgba(124,58,237,.04)); }
+    #funcionalidades .card-wow:nth-child(3n+2){ background: linear-gradient(135deg, rgba(124,58,237,.06), rgba(59,130,246,.02)); }
+    #funcionalidades .card-wow:nth-child(3n+3){ background: linear-gradient(135deg, rgba(16,185,129,.08), rgba(59,130,246,.03)); }
   
 /* ---------- Responsividade Mobile ---------- */
 @media (max-width: 640px){
@@ -154,14 +226,14 @@
   </header>
 
   <!-- Hero curto -->
-  <section class="hero-gradient section">
+  <section class="hero-gradient section"  data-aos="fade-up">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <span class="tag">CRM Jurídico simples & direto</span>
-      <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold">Organize tarefas, prazos e clientes com clareza</h1>
-      <p class="mt-4 text-lg text-slate-200">Tudo em um só lugar: painel do dia, tarefas, agenda, pipeline, relatórios e financeiro.</p>
-      <div class="mt-6 flex gap-3 justify-center">
+      <span class="tag text-blue-200" data-aos="fade-down">Feito por advogados para advogados</span>
+      <h1 class="mt-4 text-4xl sm:text-5xl font-extrabold" data-aos="fade-up" data-aos-delay="100">Ganhe 12 horas por semana com o CRM que fala a língua do seu escritório.</h1>
+      <p class="mt-4 text-lg text-slate-200" data-aos="fade-up" data-aos-delay="200">Centralize prazos, audiências, honorários e finanças em um só lugar. Reduza retrabalho, elimine planilhas e mantenha a equipe alinhada.</p>
+      <div class="mt-6 flex gap-3 justify-center" data-aos="zoom-in" data-aos-delay="300">
         <a class="btn btn-primary" href="#cta">Começar grátis</a>
-        <a class="btn bg-white/10 text-white border border-white/20 hover:bg-white/20" href="#telas">Ver as telas</a>
+        <a class="btn text-white/80 border border-white/40 bg-white/0 hover:bg-white/10 hover:text-white" href="#telas">Conheça as telas</a>
       </div>
     </div>
   </section>
@@ -169,12 +241,12 @@
   <!-- Seção de Telas em duas colunas com mockup novo -->
   <section id="telas" class="section bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-4xl mx-auto mb-10 reveal">
+      <div class="text-center max-w-4xl mx-auto mb-10 reveal" data-aos="fade-up">
         <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold tracking-wide text-blue-700">
-          <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span> Veja o produto em ação
+          <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span> Veja o ARGOS em funcionamento
         </span>
-        <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">As principais telas do ARGOS</h2>
-        
+        <h2 class="mt-3 text-3xl sm:text-4xl font-extrabold tracking-tight">Veja como cada área do escritório ganha uma visão única e acionável</h2>
+        <p class="mt-3 text-slate-600">Mostre à equipe como os painéis reúnem andamento de processos, audiências, finanças e relacionamento com clientes em uma única visão.</p>
       </div>
 
       <div class="grid lg:grid-cols-2 gap-10 items-center">
@@ -186,20 +258,20 @@
             <button id="scrNext" class="nav-btn" aria-label="Próximo">›</button>
           </div>
 
-          <div class="notebook-wrap tilt reveal" id="tiltArea">
+          <div class="notebook-wrap tilt reveal" id="tiltArea" data-aos="zoom-in-up" data-aos-delay="150">
             <img src="note.svg" alt="Notebook mockup" class="notebook">
             <div class="screen">
               <div class="slides" id="slides">
                 <div class="slides-track" id="track">
                   <figure class="slide"><img src="tela1.png" alt="Painel diário"></figure>
                   <figure class="slide"><img src="tela2.png" alt="Minhas tarefas"></figure>
-                  <figure class="slide"><img src="tela3.png" alt="Agenda & Relatórios"></figure>
+                  <figure class="slide"><img src="tela3.png" alt="Caixa de entrada"></figure>
                   <figure class="slide"><img src="tela4.png" alt="Agenda & Relatórios"></figure>
-                  <figure class="slide"><img src="tela5.png" alt="Agenda & Relatórios"></figure>
-                  <figure class="slide"><img src="tela6.png" alt="Agenda & Relatórios"></figure>
-                  <figure class="slide"><img src="tela7.png" alt="Agenda & Relatórios"></figure>
-                  <figure class="slide"><img src="tela8.png" alt="Agenda & Relatórios"></figure>
-                  <figure class="slide"><img src="tela9.png" alt="Agenda & Relatórios"></figure>
+                  <figure class="slide"><img src="tela5.png" alt="Financeiro"></figure>
+                  <figure class="slide"><img src="tela6.png" alt="Metas e gamificação"></figure>
+                  <figure class="slide"><img src="tela7.png" alt="CRM Pipeline"></figure>
+                  <figure class="slide"><img src="tela8.png" alt="Gerenciador de Processos"></figure>
+                  <figure class="slide"><img src="tela9.png" alt="Gerenciador de clientes"></figure>
 
                 </div>
               </div>
@@ -208,7 +280,7 @@
         </div>
 
         <!-- Direita: Legenda -->
-        <aside class="caption-box reveal" id="captionBox">
+        <aside class="caption-box reveal" id="captionBox" data-aos="fade-left" data-aos-delay="250">
           <div class="cap-content">
             <div class="cap-kicker"><span>ARGOS Lex</span></div>
             <h3 class="cap-title mt-2" id="capTitle">Painel diário — comece pelo que importa</h3>
@@ -230,162 +302,464 @@
 
   <!-- (The rest of the page continues unchanged from v4: funcionalidades, relatórios, preços, CTA, footer) -->
   <!-- FUNCIONALIDADES (WOW) -->
+  
   <section id="funcionalidades" class="relative section overflow-hidden bg-slate-50">
-    <div class="pointer-events-none absolute inset-0">
-      <div class="parallax-blob absolute -top-28 -left-24 h-72 w-72 rounded-full bg-blue-200/60 blur-3xl" data-speed="1.4"></div>
-      <div class="parallax-blob absolute -bottom-28 -right-16 h-96 w-96 rounded-full bg-violet-200/50 blur-[90px]" data-speed="-1.2"></div>
-      <div class="parallax-blob absolute top-1/3 -left-10 h-44 w-44 rounded-full bg-cyan-200/50 blur-2xl" data-speed="-0.9"></div>
+  <!-- Decor: blobs -->
+  <div class="pointer-events-none absolute inset-0">
+    <div class="absolute -top-24 -left-20 h-72 w-72 rounded-full bg-blue-200/50 blur-3xl"></div>
+    <div class="absolute -bottom-24 -right-16 h-80 w-80 rounded-full bg-violet-200/40 blur-[90px]"></div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto" data-aos="fade-up">
+      <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold tracking-wide text-blue-700">
+        <span class="h-2 w-2 rounded-full bg-blue-600"></span> Recursos que você usa todo dia
+      </span>
+      <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+        O essencial para o escritório funcionar melhor
+      </h2>
+      <p class="mt-3 text-slate-600">
+        Fluxos intuitivos pensados para a operação jurídica: seis pilares que conectam prazos, tarefas, audiências, clientes e finanças.
+      </p>
     </div>
 
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-3xl mx-auto">
-        <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-semibold tracking-wide text-blue-700">
-          <span class="h-2 w-2 rounded-full bg-blue-600 animate-pulse"></span> Recursos principais
-        </span>
-        <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">Gestão completa, simples de entender</h2>
-        <p class="mt-3 text-slate-600">Painel do dia, tarefas em lista e quadro, agenda de audiências, CRM de leads, relatórios e financeiro.</p>
-      </div>
-
-      <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Features (same as v4) -->
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm13 9H4v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7ZM5 7a1 1 0 0 0-1 1v1h16V8a1 1 0 0 0-1-1H5Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Painel do dia</h3><p class="mt-1 text-sm text-slate-600">Veja o que é urgente, o que vem depois e quem é o responsável.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v3H2V6a2 2 0 0 1 2-2Zm-2 8h8v6H4a2 2 0 0 1-2-2v-4Zm10 0h10v4a2 2 0 0 1-2 2h-8v-6Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Tarefas em lista e quadro</h3><p class="mt-1 text-sm text-slate-600">Organize por Hoje, Semana e Todas. Arraste no Kanban.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 1 1-6.364 2.636A8.972 8.972 0 0 1 12 2Zm0 2a7 7 0 1 0 7 7 7.008 7.008 0 0 0-7-7Zm1 3v4.382l3.447 2.069-1 1.732L11 12V7h2Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Agenda & audiências</h3><p class="mt-1 text-sm text-slate-600">Cronograma do dia com horários, salas e próximos compromissos.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v4H3V4Zm0 6h12v4H3v-4Zm0 6h7v4H3v-4Zm14 0h4v4h-4v-4Z"/></svg></div><div><h3 class="font-semibold text-slate-900">CRM & Pipeline</h3><p class="mt-1 text-sm text-slate-600">Acompanhe leads por etapa e receba alertas de prazo.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v2H2V6Zm0 4h20v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6Zm13.707 2.293-3.5 3.5-1.414-1.414L12.586 12l-1.793-1.793 1.414-1.414 3.5 3.5 0 0Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Processos</h3><p class="mt-1 text-sm text-slate-600">Veja área, responsável, prazos e status em uma tabela clara.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h2v16H3V4Zm4 8h2v8H7v-8Zm4-6h2v14h-2V6Zm4 9h2v5h-2v-5Zm4-11h2v16h-2V4Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Relatórios</h3><p class="mt-1 text-sm text-slate-600">Acompanhe atraso médio, evolução e produtividade.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v12H4V6Zm2 2v8h12V8H6Zm3 1h2v6H9V9Zm4 2h2v4h-2v-4Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Financeiro</h3><p class="mt-1 text-sm text-slate-600">Receitas, despesas e projeção de caixa por categoria.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm8 3a4 4 0 1 0-8 0v3h8v-3Zm2-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm2 12a3 3 0 0 0-3-3h-1a5.98 5.98 0 0 1 1 3v3h3v-3Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Contatos</h3><p class="mt-1 text-sm text-slate-600">Segmentação por estágio, origem e responsável.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M18 4h3v2a5 5 0 0 1-5 5 6 6 0 0 1-2 3.874V17h3v2H7v-2h3v-2.126A6 6 0 0 1 8 11a5 5 0 0 1-5-5V4h3V2h12v2Zm0 2V4H6v2a3 3 0 0 0 3 3c.46 0 .9-.105 1.29-.293A4.994 4.994 0 0 1 12 6a4.994 4.994 0  1 1 1.71 2.707c.39.188.83.293 1.29.293a3 3 0 0 0 3-3Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Metas & gamificação</h3><p class="mt-1 text-sm text-slate-600">Pontos por entrega, níveis e ranking da equipe.</p></div></div></div>
-        <div class="card-wow group"><div class="card-content p-6 flex items-start gap-4"><div class="icon-chip"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0  0 0 12 22Zm7-6V11a7 7 0  1 0-14 0v5L3 18v2h18v-2l-2-2Z"/></svg></div><div><h3 class="font-semibold text-slate-900">Alertas inteligentes</h3><p class="mt-1 text-sm text-slate-600">Prazos críticos e pendências no lugar certo, na hora certa.</p></div></div></div>
-      </div>
-    </div>
-  </section>
-
-
-
-  <!-- Relatórios, Preços, CTA, Footer (copiados da v4) -->
-  <section id="relatorios" class="section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
-        <div class="order-2 lg:order-1">
-          <span class="tag">Relatórios</span>
-          <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight">Dados que viram ação</h2>
-          <p class="mt-4 text-slate-600">Saiba quem está sobrecarregado, onde o tempo se perde e quais áreas puxam o resultado. Decida com números, sem complicação.</p>
-          <ul class="mt-6 space-y-2 text-slate-700">
-            <li>• Atraso médio com comparativo</li>
-            <li>• Top performer e pendências críticas</li>
-            <li>• Evolução por 6 meses e status geral</li>
-            <li>• Receita do mês e projeção de caixa</li>
-          </ul>
-          <div class="mt-6"><a class="btn btn-primary" href="#cta">Ver na prática</a></div>
+    <!-- GRID 6 -->
+    <div class="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Card -->
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="fade-up" data-aos-delay="0">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- calendar lightning -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1a3 3 0 0 1 3 3v11a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h1V3a1 1 0 0 1 1-1Zm6.5 6-3 4H12l-1.5 4 3-4H12L13.5 8Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">Painel do dia + Alertas</h3>
+          <p class="text-sm text-slate-600">Evite sustos com prazos prescricionais: receba alertas de audiências, tarefas críticas e compromissos com indicadores de atraso por equipe.</p>
         </div>
-        <div class="order-1 lg:order-2">
-          <div class="rounded-2xl border border-slate-200 shadow-soft p-6">
-            <div class="grid sm:grid-cols-2 gap-4">
-              <div class="p-4 rounded-xl bg-slate-50"><div class="text-sm text-slate-500">Tempo médio de atraso</div><div class="text-2xl font-extrabold mt-1">0,8 dia</div><div class="text-emerald-600 text-sm mt-1">↓ 12% vs. mês anterior</div></div>
-              <div class="p-4 rounded-xl bg-slate-50"><div class="text-sm text-slate-500">Tarefas concluídas</div><div class="text-2xl font-extrabold mt-1">148</div><div class="text-slate-600 text-sm mt-1">Últimos 30 dias</div></div>
-              <div class="p-4 rounded-xl bg-slate-50"><div class="text-sm text-slate-500">Receita do mês</div><div class="text-2xl font-extrabold mt-1">R$ 75.900</div><div class="text-slate-600 text-sm mt-1">Consolidado</div></div>
-              <div class="p-4 rounded-xl bg-slate-50"><div class="text-sm text-slate-500">Prazos críticos</div><div class="text-2xl font-extrabold mt-1">3</div><div class="text-amber-600 text-sm mt-1">Atenção imediata</div></div>
+      </div>
+
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="fade-up-right" data-aos-delay="100">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- Kanban -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4V4Zm0 9h7v7H4v-7Zm9-9h7v11h-7V4Zm0 13h7v3h-7v-3Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">Tarefas (Lista & Kanban)</h3>
+          <p class="text-sm text-slate-600">Redistribua processos entre sócios e estagiários em segundos, filtrando por área, vara, prioridade e SLA combinado com o cliente.</p>
+        </div>
+      </div>
+
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="fade-up-left" data-aos-delay="200">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- clock/marker -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a9 9 0 1 1-6.364 2.636A8.972 8.972 0 0 1 12 2Zm1 5v4.382l3.447 2.069-1 1.732L11 12V7h2Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">Agenda & audiências</h3>
+          <p class="text-sm text-slate-600">Saiba quem está em cada audiência, sessão ou reunião híbrida, com sala, vara, tempo estimado e histórico de deslocamentos.</p>
+        </div>
+      </div>
+
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="zoom-in" data-aos-delay="300">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- pipeline/users -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v4H3V4Zm0 6h12v4H3v-4Zm0 6h7v4H3v-4Zm14 0h4v4h-4v-4Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">CRM & Pipeline</h3>
+          <p class="text-sm text-slate-600">Feche consultivo e contencioso com um pipeline jurídico: etapas customizadas, follow-ups automáticos e previsão de honorários por contrato.</p>
+        </div>
+      </div>
+
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="zoom-in-up" data-aos-delay="400">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- charts -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20V4h2v16H4Zm4 0v-8h2v8H8Zm4 0V6h2v14h-2Zm4 0v-5h2v5h-2Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">Relatórios + IA</h3>
+          <p class="text-sm text-slate-600">Acompanhe tempo médio de resposta, gargalos por área e produtividade por advogado sem construir planilhas ou dashboards no braço.</p>
+        </div>
+      </div>
+
+      <div class="card-wow group relative overflow-hidden rounded-2xl bg-white ring-1 ring-slate-200 shadow-sm transition-all hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-blue-300/60" data-aos="flip-up" data-aos-delay="500">
+        <div class="spark"></div>
+        <div class="relative p-6 flex flex-col gap-3">
+          <div class="icon-chip">
+            <!-- cash -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v12H4V6Zm2 2v8h12V8H6Zm3 1h2v6H9V9Zm4 2h2v4h-2v-4Z"/></svg>
+          </div>
+          <h3 class="font-semibold text-slate-900">Financeiro</h3>
+          <p class="text-sm text-slate-600">Cruze honorários, adiantamentos, despesas reembolsáveis e custos internos para enxergar margens por cliente e portfólio.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-900 to-blue-900"></div>
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+      <div data-aos="fade-right">
+        <span class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-blue-100">
+          <span class="h-2 w-2 rounded-full bg-blue-300"></span> Autoridade jurídica + tecnologia
+        </span>
+        <h2 class="mt-4 text-3xl sm:text-4xl font-extrabold leading-tight">
+          O único software de gestão de escritórios de advocacia criado por advogados
+        </h2>
+        <p class="mt-4 text-slate-200 text-lg">
+          Unimos vivência em bancas e produto digital. Cada fluxo do ARGOS Lex nasce do que já vivemos: prazos que vencem, audiências simultâneas, honorários por cliente e a rotina de liderar equipes jurídicas.
+        </p>
+        <div class="mt-6 grid sm:grid-cols-3 gap-4 text-sm text-slate-100">
+          <div class="rounded-xl border border-white/10 bg-white/10 px-4 py-3" data-aos="fade-up" data-aos-delay="50">
+            <h3 class="font-semibold text-white">Operação jurídica</h3>
+            <p class="mt-2 text-slate-200/90">Fluxos pensados para contencioso e consultivo: varas, tribunais, audiências, contratos e honorários recorrentes.</p>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/10 px-4 py-3" data-aos="fade-up" data-aos-delay="120">
+            <h3 class="font-semibold text-white">Tecnologia própria</h3>
+            <p class="mt-2 text-slate-200/90">Time interno evoluindo o produto com segurança, integrações e IA que conversa com a realidade jurídica.</p>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/10 px-4 py-3" data-aos="fade-up" data-aos-delay="190">
+            <h3 class="font-semibold text-white">Resultados comprovados</h3>
+            <p class="mt-2 text-slate-200/90">Implantações guiadas por quem já foi sócio de escritório, medindo métricas de produtividade desde o primeiro mês.</p>
+          </div>
+        </div>
+        <p class="mt-6 text-slate-200/80 text-sm">
+          “Construí o ARGOS Lex para resolver os mesmos problemas que tiravam meu sono como advogado gestor. Hoje traduzimos essa experiência em tecnologia para o seu escritório.” – Fernando Kerber, Advogado & Founder
+        </p>
+      </div>
+      <div class="relative" data-aos="fade-left">
+        <div class="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full"></div>
+        <div class="relative mt-10 lg:mt-0 rounded-3xl bg-white/10 border border-white/15 backdrop-blur-xl p-8 flex flex-col gap-6">
+          <div>
+            <span class="text-sm uppercase tracking-[0.28em] text-blue-200">Por dentro do produto</span>
+            <h3 class="mt-3 text-2xl font-bold text-white">Do caso ao resultado</h3>
+            <p class="mt-2 text-slate-200/90">Mapeamos o ciclo completo: captação, distribuição, execução, faturamento e relacionamento. Nada genérico, tudo voltado ao direito.</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-white">O que você encontra aqui:</h4>
+            <ul class="mt-2 space-y-2 text-slate-200/90">
+              <li>&bull; Onboarding assistido por especialistas que já operaram escritórios.</li>
+              <li>&bull; Roadmap vivo construído com feedback de bancas de todo o país.</li>
+              <li>&bull; Comunidade para benchmarking entre sócios, gestores e controllers jurídicos.</li>
+            </ul>
+          </div>
+          <div class="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center gap-4">
+            <div class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-400 to-violet-500 grid place-items-center font-bold">A</div>
+            <div>
+              <p class="text-sm text-slate-100/90">Fernando Kerber</p>
+              <p class="text-xs text-slate-200/70">Advogado e desenvolvedor, fundador do ARGOS Lex</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
 
+  <!-- Relatórios, Preços, CTA, Footer (copiados da v4) -->
+
+  
+
+  
+<!-- relatórios - agora IA insights -->
+
+<!-- ===== Insights por IA (substitui a seção atual de Relatórios) ===== -->
+<section id="relatorios" class="section relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-blue-50"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="grid lg:grid-cols-2 gap-10 items-center">
+
+      <!-- Texto -->
+      <div class="animate-fade-up" data-aos="fade-right">
+        <span class="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/60 px-3 py-1 text-xs font-semibold tracking-wide text-blue-700 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l1.5 3.8 4.5.6-3 2.8.7 4.1-3.7-2-3.7 2 .7-4.1-3-2.8 4.5-.6L12 2z"/>
+          </svg>
+          Insights de IA em tempo real
+        </span>
+
+        <h2 class="mt-4 text-4xl font-extrabold text-slate-900 leading-tight">
+          Seu escritório, analisado pela <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600">inteligência do ARGOS</span>
+        </h2>
+
+        <p class="mt-4 text-slate-600 text-lg leading-relaxed">
+          Todos os dias o ARGOS entende seu desempenho, identifica atrasos, compara períodos e indica o que mais importa agora. 
+          Um assistente inteligente que aprende com sua rotina e mostra o caminho certo para focar e crescer.
+        </p>
+
+        <ul class="mt-6 space-y-2 text-slate-700">
+          <li>&bull; Cliente reclamou de honorários? Receba quem deve retornar e quais argumentos usar com base no histórico.</li>
+          <li>&bull; Audiências concentradas na 3ª Vara do Trabalho? Veja a recomendação de redistribuir equipe antes do gargalo.</li>
+          <li>&bull; Fase de acordo travada? O ARGOS aponta receita prevista, riscos e próximos passos para acelerar a decisão.</li>
+        </ul>
 
 
-  <section id="precos" class="section bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center max-w-2xl mx-auto">
-        <h2 class="text-3xl sm:text-4xl font-extrabold">Planos simples e diretos</h2>
-        <p class="mt-2 text-slate-600">Teste grátis. Sem cartão. Cancele quando quiser.</p>
+<!-- 
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a class="btn btn-primary" href="#cta">Ver recomendações de hoje</a>
+          <a class="btn bg-white text-slate-900 border border-slate-200 hover:bg-slate-50" href="#funcionalidades">Como funciona a IA</a>
+        </div>
+
+      -->
       </div>
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <div class="price-card tiltable p-6">
-          <h3 class="font-bold text-lg">Start</h3>
-          <p class="text-sm text-slate-600 mt-1">Para profissionais solo.</p>
-          <div class="mt-4 text-3xl font-extrabold">R$ 99<span class="text-base font-semibold text-slate-500">/mês</span></div>
-          <ul class="mt-4 space-y-2 text-sm text-slate-700">
-            <li>• Tarefas, agenda e processos</li>
-            <li>• Pipeline e contatos</li>
-            <li>• Relatórios essenciais</li>
-          </ul>
-          <a href="#cta" class="btn btn-primary mt-6 w-full justify-center">Começar no Start</a>
+
+
+
+
+      <!-- Card da IA -->
+      <div class="animate-fade-up delay-200" data-aos="fade-left" data-aos-delay="150">
+        <div class="relative rounded-2xl bg-white/90 shadow-xl border border-slate-200 backdrop-blur-md overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-violet-50 opacity-70"></div>
+          <div class="relative p-6">
+            
+            <div class="flex items-center justify-between mb-3">
+              <div class="text-xs font-semibold text-blue-700 bg-blue-100 px-3 py-1 rounded-full shadow-sm">
+                🔮 Insight do dia
+              </div>
+              <span class="text-xs text-slate-500">Atualizado às <span id="insightTime">08:00</span></span>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-slate-900">Foco sugerido para hoje</h3>
+            <p class="text-slate-600 mt-1">O que pode gerar o maior impacto agora:</p>
+
+            <ul id="insightList" class="mt-4 space-y-3 text-sm"></ul>
+
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full border border-blue-200">Gerado por IA</span>
+              <span class="text-xs bg-violet-50 text-violet-700 px-2 py-1 rounded-full border border-violet-200">Insight automatizado</span>
+              <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full border border-emerald-200">Alta relevância</span>
+            </div>
+          </div>
         </div>
-        <div class="price-card tiltable p-6 border-2 border-blue-500 relative">
-          <div class="absolute -top-3 right-4 bg-blue-600 text-white text-xs px-2 py-1 rounded">Mais popular</div>
-          <h3 class="font-bold text-lg">Pro</h3>
-          <p class="text-sm text-slate-600 mt-1">Para equipes que querem crescer.</p>
-          <div class="mt-4 text-3xl font-extrabold">R$ 399<span class="text-base font-semibold text-slate-500">/mês</span></div>
-          <ul class="mt-4 space-y-2 text-sm text-slate-700">
-            <li>• Tudo do Start</li>
-            <li>• Metas e gamificação</li>
-            <li>• Relatórios avançados e projeções</li>
-            <li>• Automações de pipeline</li>
-          </ul>
-          <a href="#cta" class="btn btn-primary mt-6 w-full justify-center">Assinar o Pro</a>
+
+        <!-- Blocos extras -->
+        <!-- 
+        <div class="grid sm:grid-cols-2 gap-4 mt-5">
+          <div class="bg-gradient-to-br from-violet-600 to-blue-500 text-white rounded-xl p-4 shadow-md">
+            <div class="text-xs uppercase opacity-90 font-semibold">Resumo semanal</div>
+            <div class="text-2xl font-bold mt-1">+18%</div>
+            <p class="text-sm opacity-90">Entregas vs. semana anterior</p>
+          </div>
+          <div class="bg-gradient-to-br from-emerald-600 to-green-500 text-white rounded-xl p-4 shadow-md">
+            <div class="text-xs uppercase opacity-90 font-semibold">Resumo mensal</div>
+            <div class="text-2xl font-bold mt-1">R$ 75,9 mil</div>
+            <p class="text-sm opacity-90">Receita consolidada</p>
+          </div>
         </div>
-        <div class="price-card tiltable p-6">
-          <h3 class="font-bold text-lg">Enterprise</h3>
-          <p class="text-sm text-slate-600 mt-1">Para times grandes e multiunidade.</p>
-          <div class="mt-4 text-3xl font-extrabold">Fale com vendas</div>
+      -->
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<script>
+  // ######### INSIGHTS ROTATIVOS COM ANIMAÇÃO #########
+  (function(){
+    const list = document.getElementById('insightList');
+    if(!list) return;
+
+    // Paleta por "tom" do insight
+    const COLORS = {
+      alert: { box:'bg-rose-50 border-l-4 border-rose-400', txt:'text-rose-700', bg:'bg-rose-50', brd:'border border-rose-200', emoji:'⚠' },
+      warn:  { box:'bg-amber-50 border-l-4 border-amber-400', txt:'text-amber-700', bg:'bg-amber-50', brd:'border border-amber-200', emoji:'🟡' },
+      ok:    { box:'bg-emerald-50 border-l-4 border-emerald-400', txt:'text-emerald-700', bg:'bg-emerald-50', brd:'border border-emerald-200', emoji:'✅' }
+    };
+
+    // Grupos que vamos rotacionar (edite à vontade)
+    const ROTATE = [
+      [
+        { text:'Revisar peças com atraso em Cível', extra:'–2 dias alvo', tag:'Qualidade', tone:'warn' },
+        { text:'Dar prioridade a 1 cliente em risco de churn', extra:'retensão', tag:'Retenção', tone:'alert' },
+        { text:'Fechar 1 oportunidade no estágio Proposta', extra:'conversão', tag:'Conversão', tone:'ok' },
+      ],
+      [
+        { text:'Regularizar 3 prazos críticos em Trabalhista', extra:'hoje', tag:'Atraso alto', tone:'alert' },
+        { text:'Redistribuir tarefas do João (132% da capacidade)', extra:'equilíbrio', tag:'Sobrecarga', tone:'warn' },
+        { text:'Follow-up em 4 leads quentes', extra:'receita', tag:'Pipeline', tone:'ok' },
+      ],
+      [
+        { text:'Revisão final de petições da semana', extra:'sem retrabalho', tag:'Qualidade', tone:'ok' },
+        { text:'Agendar audiência adiada na 1ª Vara', extra:'agenda', tag:'Agenda', tone:'warn' },
+        { text:'Refinar etapas no funil Extrajudicial', extra:'fluxo', tag:'Processo', tone:'ok' },
+      ]
+    ];
+
+    let idx = 0, timer, started = false;
+
+    function render(set){
+      const tSpan = document.getElementById('insightTime');
+      if (tSpan) {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2,'0');
+        const mm = String(now.getMinutes()).padStart(2,'0');
+        tSpan.textContent = `${hh}:${mm}`;
+      }
+    
+      // Saída suave dos itens atuais
+      list.classList.add('insight-list-exit');
+      // Troca de conteúdo após pequena espera
+      setTimeout(() => {
+        list.classList.remove('insight-list-exit');
+        list.innerHTML = set.map((it, i) => {
+          const c = COLORS[it.tone] || COLORS.ok;
+          return `
+          <li class="insight-item ${c.box} p-3 rounded-md shadow-sm" style="--d:${i}">
+            <div class="font-medium text-slate-900">
+              ${c.emoji} ${it.text} 
+              ${it.extra ? `<span class="${c.txt} ${c.bg} ${c.brd} inline-block text-xs px-2 py-0.5 rounded ml-1 align-middle">${it.extra}</span>` : ''}
+            </div>
+            <div class="mt-1 text-xs ${c.txt} ${c.bg} ${c.brd} inline-block px-2 py-0.5 rounded">
+              ${it.tag} • Gerado por IA
+            </div>
+          </li>`;
+        }).join('');
+        // Stagger de entrada
+        requestAnimationFrame(() => {
+          [...list.children].forEach(li => li.classList.add('show'));
+        });
+      }, 180); // tempo da saída
+    }
+
+    function next(){
+      idx = (idx + 1) % ROTATE.length;
+      render(ROTATE[idx]);
+    }
+
+    function start(){
+      if(started) return;
+      started = true;
+      render(ROTATE[idx]);
+      timer = setInterval(next, 6000); // troca a cada 6s
+    }
+
+    // Só inicia quando a seção estiver visível (melhor performance)
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e => { if(e.isIntersecting) { start(); obs.disconnect(); } });
+    }, {threshold:.2});
+    obs.observe(list);
+
+    // Pausa ao passar o mouse (desktop)
+    list.addEventListener('mouseenter', ()=> clearInterval(timer));
+    list.addEventListener('mouseleave', ()=> timer = setInterval(next, 6000));
+  })();
+</script>
+
+
+
+<!-- fim relatórios insights IA -->
+
+
+<section id="precos" class="section bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center max-w-2xl mx-auto" data-aos="fade-up">
+      <h2 class="text-3xl sm:text-4xl font-extrabold">Planos simples, todos os recursos incluídos</h2>
+      <p class="mt-2 text-slate-600">Escolha apenas o volume de usuários e processos ativos. Teste grátis, sem cartão e com cancelamento a qualquer momento.</p>
+    </div>
+
+    <div class="mt-10 grid md:grid-cols-3 gap-6 items-stretch">
+      <div class="price-card tiltable flex flex-col justify-between p-6 bg-white rounded-2xl shadow-sm h-full" data-aos="fade-up-right">
+        <div>
+          <h3 class="font-bold text-lg">Essencial</h3>
+          <p class="text-sm text-slate-600 mt-1">Para bancas enxutas que precisam controlar prazos e honorários sem perder visibilidade.</p>
+          <div class="mt-4 text-3xl font-extrabold">R$ 199<span class="text-base font-semibold text-slate-500">/mês</span></div>
           <ul class="mt-4 space-y-2 text-sm text-slate-700">
-            <li>• Onboarding personalizado</li>
-            <li>• Integrações sob demanda</li>
-            <li>• Treinamento e SLA dedicado</li>
+            <li>&bull; Até 5 usuários ativos e 300 processos em acompanhamento.</li>
+            <li>&bull; Todas as funcionalidades do ARGOS Lex, sem bloqueios.</li>
+            <li>&bull; Suporte em horário comercial e templates de implantação.</li>
           </ul>
-          <a href="#cta" class="btn btn-ghost mt-6 w-full justify-center">Falar com vendas</a>
         </div>
+        <a href="#cta" class="btn btn-primary mt-6 w-full justify-center">Começar no Essencial</a>
+      </div>
+
+      <div class="price-card tiltable flex flex-col justify-between p-6 bg-white rounded-2xl shadow-md border-2 border-blue-500 relative overflow-visible h-full" data-aos="zoom-in" data-aos-delay="150">
+        <div class="absolute top-0 right-4 bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-md z-30 translate-y-[-50%]">
+          Mais escolhido
+        </div>
+        <div>
+          <h3 class="font-bold text-lg">Profissional</h3>
+          <p class="text-sm text-slate-600 mt-1">Para equipes em expansão que precisam enxergar performance, lucratividade e SLA por área.</p>
+          <div class="mt-4 text-3xl font-extrabold">R$ 299<span class="text-base font-semibold text-slate-500">/mês</span></div>
+          <ul class="mt-4 space-y-2 text-sm text-slate-700">
+            <li>&bull; Até 15 usuários ativos e 900 processos em acompanhamento.</li>
+            <li>&bull; Todas as funcionalidades, metas, automações e IA inclusas.</li>
+            <li>&bull; Onboarding assistido, suporte prioritário e reviews trimestrais.</li>
+          </ul>
+        </div>
+        <a href="#cta" class="btn btn-primary mt-6 w-full justify-center">Assinar o Profissional</a>
+      </div>
+
+      <div class="price-card tiltable flex flex-col justify-between p-6 bg-white rounded-2xl shadow-sm h-full" data-aos="fade-up-left" data-aos-delay="250">
+        <div>
+          <h3 class="font-bold text-lg">Scale</h3>
+          <p class="text-sm text-slate-600 mt-1">Para escritórios que operam múltiplas unidades, squads ou verticais e precisam de governança total.</p>
+          <div class="mt-4 text-3xl font-extrabold">R$ 599<span class="text-base font-semibold text-slate-500">/mês</span></div>
+          <ul class="mt-4 space-y-2 text-sm text-slate-700">
+            <li>&bull; Usuários ilimitados e até 2.500 processos com histórico completo.</li>
+            <li>&bull; Todas as funcionalidades, integrações avançadas e APIs.</li>
+            <li>&bull; Customer Success dedicado, reuniões mensais e roadmap estratégico.</li>
+          </ul>
+        </div>
+        <a href="#cta" class="btn btn-primary mt-6 w-full justify-center">Conversar sobre o Scale</a>
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 
 
   <section id="cta" class="section hero-gradient text-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center cta-glow tiltable">
-      <h2 class="text-4xl font-extrabold">Pronto para ter previsibilidade?</h2>
-      <p class="mt-3 text-slate-200">Crie sua conta, importe os contatos e veja impacto já no primeiro mês.</p>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center cta-glow tiltable" data-aos="zoom-in-up">
+      <h2 class="text-4xl font-extrabold">Pronto para levar seu escritório a outro patamar?</h2>
+      <p class="mt-3 text-slate-200">Mais de 120 escritórios jurídicos já ganham previsibilidade com o ARGOS Lex. Nosso time acompanha a implantação, da migração de planilhas ao treinamento da equipe.</p>
       <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
         <a class="btn btn-primary" href="#">Criar conta grátis</a>
         <a class="btn bg-white/10 text-white border border-white/20 hover:bg-white/20" href="#demo">Ver demonstração</a>
       </div>
       <ul class="mt-6 text-slate-200/90 text-sm grid sm:grid-cols-3 gap-2">
         <li class="glass rounded-lg p-2">Sem taxa de implantação</li>
-        <li class="glass rounded-lg p-2">Cancelamento a qualquer momento</li>
-        <li class="glass rounded-lg p-2">Suporte humano de verdade</li>
+        <li class="glass rounded-lg p-2">Cancele quando quiser</li>
+        <li class="glass rounded-lg p-2">Suporte humano e atencioso, todos os dias</li>
       </ul>
     </div>
   </section>
 
-  <footer class="bg-slate-950 text-slate-300 pt-14">
+  <footer class="bg-slate-950 text-slate-300 pt-14 pb-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid lg:grid-cols-5 gap-10">
-        <div class="lg:col-span-2">
+      <div class="grid lg:grid-cols-5 gap-10" data-aos="fade-up">
+        <div class="lg:col-span-2" data-aos="fade-right">
           <div class="flex items-center gap-3">
             <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 grid place-items-center text-white font-extrabold">A</div>
             <span class="font-extrabold tracking-tight text-white">ARGOS <span class="text-blue-400">Lex</span></span>
           </div>
-          <p class="mt-4 text-sm text-slate-400">CRM jurídico que simplifica o dia a dia. Menos esforço operacional, mais tempo para advogar.</p>
+          <p class="mt-4 text-sm text-slate-400">Desde 2016, um advogado e desenvolvedor à frente do ARGOS Lex ajuda bancas jurídicas a profissionalizar operações, conectar times e entregar valor consistente aos clientes.</p>
           <div class="mt-5 flex gap-3">
             <a href="#" class="h-9 w-9 grid place-items-center rounded-lg bg-white/5 hover:bg-white/10">in</a>
             <a href="#" class="h-9 w-9 grid place-items-center rounded-lg bg-white/5 hover:bg-white/10">X</a>
             <a href="#" class="h-9 w-9 grid place-items-center rounded-lg bg-white/5 hover:bg-white/10">IG</a>
           </div>
         </div>
-        <div>
+        <div data-aos="fade-up" data-aos-delay="150">
           <h4 class="font-semibold text-white">Produto</h4>
           <ul class="mt-3 space-y-2 text-sm">
             <li><a href="#telas" class="hover:text-white">Telas</a></li>
             <li><a href="#funcionalidades" class="hover:text-white">Funcionalidades</a></li>
             <li><a href="#relatorios" class="hover:text-white">Relatórios</a></li>
             <li><a href="#precos" class="hover:text-white">Planos</a></li>
-            <li><a href="#depoimentos" class="hover:text-white">Depoimentos</a></li>
+            <li><a href="#depoimentos" class="hover:text-white">Casos reais</a></li>
           </ul>
         </div>
-        <div>
+        <div data-aos="fade-up" data-aos-delay="250">
           <h4 class="font-semibold text-white">Ajuda</h4>
           <ul class="mt-3 space-y-2 text-sm">
             <li><a href="#" class="hover:text-white">Central de ajuda</a></li>
@@ -394,7 +768,7 @@
             <li><a href="#" class="hover:text-white">Guia de migração</a></li>
           </ul>
         </div>
-        <div>
+        <div data-aos="fade-up" data-aos-delay="350">
           <h4 class="font-semibold text-white">Fale conosco</h4>
           <ul class="mt-3 space-y-2 text-sm">
             <li class="text-slate-400">contato@argoslex.com</li>
@@ -409,7 +783,7 @@
           </form>
         </div>
       </div>
-      <div class="mt-10 border-t border-white/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+      <div class="mt-10 border-t border-white/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500" data-aos="fade-up" data-aos-delay="200">
         <p>© <span id="year"></span> Argos Lex. Todos os direitos reservados.</p>
         <div class="flex gap-4">
           <a href="#" class="hover:text-white">Termos</a>
@@ -419,7 +793,35 @@
       </div>
     </div>
   </footer>
+
+  
   <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.addEventListener('load', function () {
+      window.scrollTo(0, 0);
+      const sticky = document.getElementById('stickyCta');
+      const pricing = document.getElementById('precos');
+      if(!sticky) return;
+
+      const update = () => {
+        const pastHero = window.scrollY > 280;
+        if (!pricing) {
+          sticky.classList.toggle('is-visible', pastHero);
+          return;
+        }
+        const pricingTop = pricing.getBoundingClientRect().top + window.scrollY;
+        const pricingBottom = pricingTop + pricing.offsetHeight;
+        const withinPricing = window.scrollY + window.innerHeight > pricingTop && window.scrollY < pricingBottom;
+        sticky.classList.toggle('is-visible', pastHero && !withinPricing);
+      };
+
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+    });
+
     document.getElementById('year').textContent = new Date().getFullYear();
 
     // Reveal on scroll
@@ -559,18 +961,34 @@
 
 
   <!-- Sticky CTA de preço -->
-  <div class="sticky bottom-4 inset-x-0 z-40">
-    <div class="max-w-xl mx-auto">
-      <div class="mx-4 md:mx-0 rounded-2xl bg-white/90 backdrop-blur border border-slate-200 shadow-lg flex items-center justify-between px-4 py-3">
-        <div class="text-sm">
-          <span class="font-semibold">Planos a partir de</span>
-          <span class="ml-1 font-display text-lg">R$ 99/mês</span>
-          <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs">14 dias grátis</span>
+  <div class="fixed bottom-4 inset-x-0 z-40 px-3 sm:px-0">
+    <div id="stickyCta" class="sticky-cta w-full max-w-xl mx-auto">
+      <div class="rounded-3xl bg-white shadow-xl border border-slate-200/80 backdrop-blur flex items-center gap-3 px-4 py-3 sm:px-6 sm:py-4">
+        <div class="text-sm sm:text-base leading-tight">
+          <span class="font-semibold text-slate-900">Comece a partir de</span>
+          <span class="ml-1 font-display text-lg sm:text-xl text-slate-900">R$ 199/mês</span>
+          <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[11px] sm:text-xs font-medium">14 dias grátis</span>
         </div>
-        <a href="#precos" class="btn btn-primary">Escolher plano</a>
+        <a href="#precos" class="btn btn-primary whitespace-nowrap px-4 py-2 text-sm sm:text-base">Escolher plano</a>
       </div>
     </div>
   </div>
+
+
+<!-- AOS (Animate On Scroll) -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    AOS.init({
+      duration: 800,   // velocidade da animação
+      once: true,      // anima apenas 1x
+      offset: 30,      // dispara um pouco antes
+      easing: 'ease-out'
+    });
+  });
+</script>
+
+
 
 
 </body>
